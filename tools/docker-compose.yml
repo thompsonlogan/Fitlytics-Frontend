@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  main:
+    image: "openapitools/openapi-generator-cli"
+    command:
+      [
+        "generate",
+        "-i",
+        "http://host.docker.internal:5163/swagger/v1/swagger.json",
+        "-g",
+        "typescript-fetch",
+        "-o",
+        "/local"
+      ]
+    volumes:
+      - ../Fitlytics/src/services/generated:/local
