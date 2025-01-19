@@ -24,13 +24,49 @@ export interface WorkoutExerciseDto {
      * @type {string}
      * @memberof WorkoutExerciseDto
      */
-    exerciseId?: string;
+    workoutExerciseId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof WorkoutExerciseDto
+     */
+    workoutId: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof WorkoutExerciseDto
+     */
+    exerciseId: string;
     /**
      * 
      * @type {string}
      * @memberof WorkoutExerciseDto
      */
     exerciseName: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    exerciseNumber: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    warmupSets: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    workingSets: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    reps: number;
     /**
      * 
      * @type {string}
@@ -42,13 +78,43 @@ export interface WorkoutExerciseDto {
      * @type {number}
      * @memberof WorkoutExerciseDto
      */
-    sets: number;
+    trainingPercent?: number | null;
     /**
      * 
      * @type {number}
      * @memberof WorkoutExerciseDto
      */
-    reps: number;
+    rpe: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof WorkoutExerciseDto
+     */
+    restTime?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    actualSets?: number | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof WorkoutExerciseDto
+     */
+    actualReps?: number | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof WorkoutExerciseDto
+     */
+    actualWeight?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof WorkoutExerciseDto
+     */
+    notes?: string | null;
     /**
      * 
      * @type {Array<string>}
@@ -61,10 +127,16 @@ export interface WorkoutExerciseDto {
  * Check if a given object implements the WorkoutExerciseDto interface.
  */
 export function instanceOfWorkoutExerciseDto(value: object): value is WorkoutExerciseDto {
+    if (!('workoutExerciseId' in value) || value['workoutExerciseId'] === undefined) return false;
+    if (!('workoutId' in value) || value['workoutId'] === undefined) return false;
+    if (!('exerciseId' in value) || value['exerciseId'] === undefined) return false;
     if (!('exerciseName' in value) || value['exerciseName'] === undefined) return false;
-    if (!('weight' in value) || value['weight'] === undefined) return false;
-    if (!('sets' in value) || value['sets'] === undefined) return false;
+    if (!('exerciseNumber' in value) || value['exerciseNumber'] === undefined) return false;
+    if (!('warmupSets' in value) || value['warmupSets'] === undefined) return false;
+    if (!('workingSets' in value) || value['workingSets'] === undefined) return false;
     if (!('reps' in value) || value['reps'] === undefined) return false;
+    if (!('weight' in value) || value['weight'] === undefined) return false;
+    if (!('rpe' in value) || value['rpe'] === undefined) return false;
     if (!('muclesWorked' in value) || value['muclesWorked'] === undefined) return false;
     return true;
 }
@@ -79,11 +151,22 @@ export function WorkoutExerciseDtoFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'exerciseId': json['exerciseId'] == null ? undefined : json['exerciseId'],
+        'workoutExerciseId': json['workoutExerciseId'],
+        'workoutId': json['workoutId'],
+        'exerciseId': json['exerciseId'],
         'exerciseName': json['exerciseName'],
-        'weight': json['weight'],
-        'sets': json['sets'],
+        'exerciseNumber': json['exerciseNumber'],
+        'warmupSets': json['warmupSets'],
+        'workingSets': json['workingSets'],
         'reps': json['reps'],
+        'weight': json['weight'],
+        'trainingPercent': json['trainingPercent'] == null ? undefined : json['trainingPercent'],
+        'rpe': json['rpe'],
+        'restTime': json['restTime'] == null ? undefined : json['restTime'],
+        'actualSets': json['actualSets'] == null ? undefined : json['actualSets'],
+        'actualReps': json['actualReps'] == null ? undefined : json['actualReps'],
+        'actualWeight': json['actualWeight'] == null ? undefined : json['actualWeight'],
+        'notes': json['notes'] == null ? undefined : json['notes'],
         'muclesWorked': json['muclesWorked'] == null ? null : json['muclesWorked'],
     };
 }
@@ -99,11 +182,22 @@ export function WorkoutExerciseDtoToJSONTyped(value?: WorkoutExerciseDto | null,
 
     return {
         
+        'workoutExerciseId': value['workoutExerciseId'],
+        'workoutId': value['workoutId'],
         'exerciseId': value['exerciseId'],
         'exerciseName': value['exerciseName'],
-        'weight': value['weight'],
-        'sets': value['sets'],
+        'exerciseNumber': value['exerciseNumber'],
+        'warmupSets': value['warmupSets'],
+        'workingSets': value['workingSets'],
         'reps': value['reps'],
+        'weight': value['weight'],
+        'trainingPercent': value['trainingPercent'],
+        'rpe': value['rpe'],
+        'restTime': value['restTime'],
+        'actualSets': value['actualSets'],
+        'actualReps': value['actualReps'],
+        'actualWeight': value['actualWeight'],
+        'notes': value['notes'],
         'muclesWorked': value['muclesWorked'],
     };
 }

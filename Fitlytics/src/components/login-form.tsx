@@ -7,51 +7,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useCallback, useEffect } from "react"
+import { useEffect } from "react"
 import { useRouter, useSearch } from '@tanstack/react-router'
-import { useDataApis } from "@/services/context"
 import { useAuthStore } from "@/stores/authstore"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter()
-  const { userApi } = useDataApis()
   const searchParams = useSearch({ from: '/login' });
   const  { login } = useAuthStore()
+  const queryClient = useQueryClient()
 
   const handleGoogleLogin = async () => {
     const returnUrl = encodeURIComponent("http://localhost:5173/login"); 
     window.location.href = `http://localhost:5163/api/Auth/external/login?provider=Google&returnUrl=${returnUrl}`;
   }
 
-  const getUserInfo = useCallback(async () => {
-    try {
-      const res = await userApi.apiUserGet();
-      console.log(res);
-    } catch (exception) {
-      console.log("error getting user info: " + exception);
-    }
-  }, [userApi]);
-
   useEffect(() => {
     const status = searchParams.status;
     const message = searchParams.message;
 
     if (status === "Success") {
-      getUserInfo()
-      .then(() => {
-        login()
-        router.navigate({ to: '/dashboard' }); // Navigate to the dashboard after successfully fetching user info
-      })
-      .catch((error) => {
-        console.error("Failed to fetch user info after login", error);
-      });
+      queryClient.invalidateQueries({queryKey: ["user"]}); 
+      login()
+      router.navigate({ to: '/dashboard' });
     } else if (status == "Error") {
       console.log(`External login failed: ${message}`);
     }
-  }, [getUserInfo, login, router, searchParams])
+  }, [login, queryClient, router, searchParams])
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

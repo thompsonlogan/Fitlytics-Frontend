@@ -1,5 +1,5 @@
-import { useDataApis } from "@/services/context";
-import { columns, Exercise } from "./data-table/columns";
+
+import { columns } from "./data-table/columns";
 import { DataTable } from "./data-table/data-table";
 import { useEffect, useState } from "react";
 import { WorkoutProgramDto, ProgramWeekDto, WorkoutDto } from "@/services/generated/models";
@@ -12,28 +12,16 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
+import { useGetProgramQuery } from "@/queries/programQueries";
 
 export function Plan() {
-  const { programApi } = useDataApis();
   const [programData, setProgramData] = useState<WorkoutProgramDto>();
   const [selectedWeek, setSelectedWeek] = useState<string>("");
+  const { data } = useGetProgramQuery("83f2deca-c973-4184-94b6-0a6df5cc103f")
 
   useEffect(() => {
-    const fetchProgramData = async () => {
-      try {
-        const requestParams = {
-          programId: "83f2deca-c973-4184-94b6-0a6df5cc103f",
-        };
-
-        const res = await programApi.apiProgramGet(requestParams);
-        setProgramData(res);
-      } catch (exception) {
-        console.error(exception);
-      }
-    };
-
-    fetchProgramData();
-  }, [programApi]);
+    setProgramData(data)
+  }, [data]);
 
   useEffect(() => {
     if (programData?.programWeeks?.length) {
@@ -42,23 +30,6 @@ export function Plan() {
   }, [programData]);
 
   const handleSelectChange = (value: string) => setSelectedWeek(value);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const transformData = (workoutExercises: any[]): Exercise[] => {
-    return workoutExercises.map((exercise) => ({
-      day: "",
-      exercise: exercise.exerciseName,
-      warmup_sets: 0, // Assuming no warmup_sets from API
-      working_sets: exercise.sets,
-      reps: exercise.reps,
-      load: exercise.weight,
-      percent: 0, // Assuming no percent from API
-      rpe: 0, // Assuming no RPE from API
-      rest_time: 0, // Assuming no rest_time from API
-      actual: exercise.weight, // Assuming actual = weight
-      notes: "", // Assuming no notes from API
-    }));
-  };
 
   const handleAddRow = (workoutId: string) => {
     if (programData?.programWeeks) {
@@ -75,11 +46,16 @@ export function Plan() {
                     workoutExercises: [
                       ...(workout.workoutExercises || []),
                       {
+                        workoutExerciseId: "empty",
+                        workoutId: "empty",
                         exerciseId: "empty",
-                        exerciseName: "empty",
-                        weight: "100",
-                        sets: 2,
+                        exerciseNumber : 10,
+                        warmupSets: 2,
+                        workingSets: 3,
                         reps: 10,
+                        weight: "100",
+                        rpe: 8,
+                        exerciseName: "empty",
                         muclesWorked: [],
                       },
                     ],
@@ -187,8 +163,8 @@ export function Plan() {
                   <div key={workout.workoutId}>
                     <h3 className="pt-6 pb-2">{workout.name}</h3>
                     <DataTable
-                      columns={columns} // Ensure `columns` is defined
-                      data={transformData(workout.workoutExercises ?? [])}
+                      columns={columns}
+                      data={workout.workoutExercises ?? []}
                       onAddRow={() => handleAddRow(workout.workoutId ?? "")} 
                     />
                   </div>
@@ -204,8 +180,8 @@ export function Plan() {
                     <div key={workout.workoutId}>
                       <h3 className="pt-6 pb-2">{workout.name}</h3>
                       <DataTable
-                        columns={columns} // Ensure `columns` is defined
-                        data={transformData(workout.workoutExercises ?? [])}
+                        columns={columns}
+                        data={workout.workoutExercises ?? []}
                         onAddRow={() => handleAddRow(workout.workoutId ?? "")}
                       />
                     </div>

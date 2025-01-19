@@ -51,6 +51,7 @@ export function ExerciseComboBox(props: ExerciseComboBoxProps) {
           role="combobox"
           aria-expanded={open}
           className="w-[200px] justify-between"
+          id="exercise_name_input"
         >
           {value
             ? exercises.find((exercises) => exercises.name === value)?.name

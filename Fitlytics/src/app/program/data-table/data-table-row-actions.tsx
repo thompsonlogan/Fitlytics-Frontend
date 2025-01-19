@@ -20,11 +20,12 @@ interface DataTableRowActionsProps<TData> {
 }
 
 interface InputElements {
+  exerciseName?: HTMLButtonElement;
   warmupSets?: HTMLInputElement;
   workingSets?: HTMLInputElement;
   reps?: HTMLInputElement;
-  load?: HTMLInputElement;
-  percent?: HTMLInputElement;
+  weight?: HTMLInputElement;
+  trainingPercent?: HTMLInputElement;
   rpe?: HTMLInputElement;
   restTime?: HTMLInputElement;
   actual?: HTMLInputElement;
@@ -37,11 +38,12 @@ function editRow(row: Row<any>, column: Column<any>, table: Table<any>): void {
     selected = false;
 
     const inputElements: InputElements = {
+      exerciseName: document.getElementById("exercise_name_input") as HTMLButtonElement,
       warmupSets: document.getElementById("warmup_sets_input") as HTMLInputElement,
       workingSets: document.getElementById("working_sets_input") as HTMLInputElement,
       reps: document.getElementById("reps_input") as HTMLInputElement,
-      load: document.getElementById("load_input") as HTMLInputElement,
-      percent: document.getElementById("percent_input") as HTMLInputElement,
+      weight: document.getElementById("load_input") as HTMLInputElement,
+      trainingPercent: document.getElementById("percent_input") as HTMLInputElement,
       rpe: document.getElementById("rpe_input") as HTMLInputElement,
       restTime: document.getElementById("rest_time_input") as HTMLInputElement,
       actual: document.getElementById("actual_input") as HTMLInputElement,
@@ -50,9 +52,12 @@ function editRow(row: Row<any>, column: Column<any>, table: Table<any>): void {
     // Update row.original values with input values
     for (const key in inputElements) {
       if (Object.prototype.hasOwnProperty.call(inputElements, key)) {
-        const input = inputElements[key as keyof InputElements]; // Type assertion
+        const input = inputElements[key as keyof InputElements];
         if (input instanceof HTMLInputElement) {
           row.original[key as keyof typeof row.original] = input.value;
+        }
+        if (input instanceof HTMLButtonElement) {
+          row.original[key as keyof typeof row.original] = input.textContent;
         }
       }
     }

@@ -23,6 +23,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useGetUserQuery } from "@/queries/userQueries"
 
 // This is sample data.
 const data = {
@@ -165,6 +166,8 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: user } = useGetUserQuery() 
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -175,7 +178,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={{
+          name: user?.firstName ?? "",
+          email: user?.email ?? "",
+          avatar: "/avatars/shadcn.jpg"
+        }}/>{/* TODO: Clean up user model */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
