@@ -27,23 +27,24 @@ import { Button } from "@/components/ui/button"
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData> {
-    onRowUpdate: (updatedRow: TData, rowIndex: number) => void;
+    onRowUpdate: (updatedRow: TData, rowIndex: number, workoutId: string) => void
+    //(updatedRow: TData, rowIndex: number) => void;
   }
 }
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[]
   data: TData[]
   onAddRow: () => void // A callback to handle adding a new row
-  //onRowUpdate: (updatedRow: TData, rowIndex: number) => void; // Callback for row updates
+  onRowUpdate: (updatedRow: TData, rowIndex: number, workoutId: string) => void // Callback for row updates
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
     columns,
     data,
     onAddRow,
-    //onRowUpdate
-  }: DataTableProps<TData, TValue>) {
+    onRowUpdate
+  }: DataTableProps<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -66,9 +67,9 @@ export function DataTable<TData, TValue>({
           columnVisibility,
           rowSelection,
         },
-        /*meta: {
+        meta: {
           onRowUpdate
-        }**/
+        }
     })
   
     return (

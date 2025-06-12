@@ -2,6 +2,7 @@ apis/AuthApi.ts
 apis/ExerciseApi.ts
 apis/ProgramApi.ts
 apis/UserApi.ts
+apis/WorkoutApi.ts
 apis/index.ts
 index.ts
 models/CookieOptions.ts

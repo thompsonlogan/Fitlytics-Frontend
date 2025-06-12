@@ -10,6 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useEditWorkoutExerciseMutation } from "@/mutations/workoutMutations"
+import { useQueryClient } from "@tanstack/react-query"
 
 // import './styles/actionStyle.css';
 
@@ -37,9 +39,10 @@ function editRow(row: Row<any>, column: Column<any>, table: Table<any>): void {
   if (selected) {
     selected = false;
 
+    // TODO: remove this for updating the elements. Instead add valiation here and add the call to update the database with the new data here
     const inputElements: InputElements = {
       exerciseName: document.getElementById("exercise_name_input") as HTMLButtonElement,
-      warmupSets: document.getElementById("warmup_sets_input") as HTMLInputElement,
+      //warmupSets: document.getElementById("warmup_sets_input") as HTMLInputElement,
       workingSets: document.getElementById("working_sets_input") as HTMLInputElement,
       reps: document.getElementById("reps_input") as HTMLInputElement,
       weight: document.getElementById("load_input") as HTMLInputElement,
@@ -76,6 +79,29 @@ export function DataTableRowActions<TData>({
   row, column, table
 }: DataTableRowActionsProps<TData>) {
   //const task = taskSchema.parse(row.original)
+  const { mutate } = useEditWorkoutExerciseMutation();
+  const queryClient = useQueryClient();
+
+  const handleEditRow = (row: Row<any>, column: Column<any>, table: Table<any>) => {
+    let selected = row.getIsSelected();
+
+    if (selected) {
+      selected = false;
+
+      mutate(row.original, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({queryKey: ["program"]}); 
+        },
+        onError: (error) => {
+          console.error('Error updating exercise:', error);
+        },
+      });
+    } else {
+      selected = true;
+    }
+  
+    row.toggleSelected(selected);
+  }
   
   return (
   <DropdownMenu>
@@ -86,7 +112,7 @@ export function DataTableRowActions<TData>({
         </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="DropdownMenuContent">
-        <DropdownMenuItem className="DropdownMenuItem" onClick={() => {editRow(row, column, table)}}>
+        <DropdownMenuItem className="DropdownMenuItem" onClick={() => {handleEditRow(row, column, table)}}>
             <Pen className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Edit
         </DropdownMenuItem>

@@ -21,10 +21,11 @@ import { ExerciseDto } from "@/services/generated/models"
 
 interface ExerciseComboBoxProps {
   selected: string
+  onSelect: (selectedExercise: string, exerciseId: string) => void
 }
 
 export function ExerciseComboBox(props: ExerciseComboBoxProps) {
-  const { selected } = props
+  const { selected, onSelect } = props
   const { exerciseApi } = useDataApis();
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(selected)
@@ -65,20 +66,27 @@ export function ExerciseComboBox(props: ExerciseComboBoxProps) {
           <CommandList>
             <CommandEmpty>No exercises found.</CommandEmpty>
             <CommandGroup>
-              {exercises.map((exercises) => (
+              {exercises.map((exercise) => (
                 <CommandItem
-                  key={exercises.exerciseId}
-                  value={exercises.name ?? ""}
+                  key={exercise.exerciseId}
+                  value={exercise.name ?? ""}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    const newValue = currentValue === value ? "" : currentValue
+
+                    const selectedExercise = exercises.find(
+                      (exercise) => exercise.name === currentValue
+                    );
+
+                    setValue(newValue)
                     setOpen(false)
+                    onSelect(newValue, selectedExercise?.exerciseId ?? "")
                   }}
                 >
-                  {exercises.name}
+                  {exercise.name}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === exercises.name ? "opacity-100" : "opacity-0"
+                      value === exercise.name ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

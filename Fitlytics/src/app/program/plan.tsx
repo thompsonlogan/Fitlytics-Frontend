@@ -2,7 +2,7 @@
 import { columns } from "./data-table/columns";
 import { DataTable } from "./data-table/data-table";
 import { useEffect, useState } from "react";
-import { WorkoutProgramDto, ProgramWeekDto, WorkoutDto } from "@/services/generated/models";
+import { WorkoutProgramDto, ProgramWeekDto, WorkoutDto, WorkoutExerciseDto } from "@/services/generated/models";
 import {
   Select,
   SelectContent,
@@ -99,7 +99,7 @@ export function Plan() {
     }
   };
 
-  /*const handleRowUpdate = (updatedRow: WorkoutDto, rowIndex: number) => {
+  /**const handleRowUpdate = (updatedRow: WorkoutDto, rowIndex: number) => {
     if (programData?.programWeeks) {
       const updatedProgramData: WorkoutProgramDto = {
         ...programData,
@@ -136,6 +136,39 @@ export function Plan() {
     }
   };*/
 
+  const handleRowUpdate = (
+    updatedRow: WorkoutExerciseDto,
+    rowIndex: number,
+    workoutId: string
+  ) => {
+    setProgramData((prevProgramData) => {
+      if (!prevProgramData) return prevProgramData;
+  
+      return {
+        ...prevProgramData,
+        programWeeks: prevProgramData.programWeeks
+          ? prevProgramData.programWeeks.map((week) => ({
+              ...week,
+              workouts: week.workouts
+                ? week.workouts.map((workout) => {
+                    if (workout.workoutId !== workoutId) return workout;
+  
+                    return {
+                      ...workout,
+                      workoutExercises: workout.workoutExercises
+                        ? workout.workoutExercises.map((exercise, index) =>
+                            index === rowIndex ? updatedRow : exercise
+                          )
+                        : null, // Ensure `workoutExercises` is null if originally null
+                    };
+                  })
+                : null, // Ensure `workouts` is null if originally null
+            }))
+          : null, // Ensure `programWeeks` is null if originally null
+      };
+    });
+  };
+
   return (
     <div>
       {/* Dropdown for selecting weeks */}
@@ -162,10 +195,11 @@ export function Plan() {
                 {week.workouts && week.workouts.map((workout: WorkoutDto) => (
                   <div key={workout.workoutId}>
                     <h3 className="pt-6 pb-2">{workout.name}</h3>
-                    <DataTable
+                    <DataTable<WorkoutExerciseDto>
                       columns={columns}
                       data={workout.workoutExercises ?? []}
-                      onAddRow={() => handleAddRow(workout.workoutId ?? "")} 
+                      onAddRow={() => handleAddRow(workout.workoutId ?? "")}
+                      onRowUpdate={handleRowUpdate}
                     />
                   </div>
                 ))} 
@@ -179,10 +213,11 @@ export function Plan() {
                   {week.workouts && week.workouts.map((workout: WorkoutDto) => (
                     <div key={workout.workoutId}>
                       <h3 className="pt-6 pb-2">{workout.name}</h3>
-                      <DataTable
+                      <DataTable<WorkoutExerciseDto>
                         columns={columns}
                         data={workout.workoutExercises ?? []}
                         onAddRow={() => handleAddRow(workout.workoutId ?? "")}
+                        onRowUpdate={handleRowUpdate}
                       />
                     </div>
                   ))}
