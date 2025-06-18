@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Table, Column, Row } from "@tanstack/react-table"
-import { MoreHorizontal, Pen, Trash } from "lucide-react"
+import { MoreHorizontal, Pen, Trash, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useEditWorkoutExerciseMutation } from "@/mutations/workoutMutations"
 import { useQueryClient } from "@tanstack/react-query"
-
-// import './styles/actionStyle.css';
 
 interface DataTableRowActionsProps<TData> {
   table: Table<TData>
@@ -82,9 +79,12 @@ export function DataTableRowActions<TData>({
   const { mutate } = useEditWorkoutExerciseMutation();
   const queryClient = useQueryClient();
 
+  const isSelected = row.getIsSelected()
+
   const handleEditRow = (row: Row<any>, column: Column<any>, table: Table<any>) => {
     let selected = row.getIsSelected();
 
+    // TODO: also check to make sure the data actually changed
     if (selected) {
       selected = false;
 
@@ -99,28 +99,42 @@ export function DataTableRowActions<TData>({
     } else {
       selected = true;
     }
-  
+
     row.toggleSelected(selected);
+  }
+
+  const handleCancleEditRow = (row: Row<any>) => {
+    row.toggleSelected()
   }
   
   return (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex h-5 w-8 p-0 data-[state=open]:bg-muted">
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
+    isSelected ? (
+      <div>
+        <Button variant="ghost" size="icon" onClick={() => {handleEditRow(row, column, table)}}>
+          <Check className="mr-2 h-3.5 w-3.5 text-muted-foreground/70"/>
         </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="DropdownMenuContent">
-        <DropdownMenuItem className="DropdownMenuItem" onClick={() => {handleEditRow(row, column, table)}}>
-            <Pen className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem className="DropdownMenuItem" onClick={deleteTest}>
-            <Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-            Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <Button variant="ghost" size="icon" onClick={() => {handleCancleEditRow(row)}}>
+          <X className="mr-2 h-3.5 w-3.5 text-muted-foreground/70"/>
+        </Button>
+      </div>
+    ) : (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="flex h-5 w-8 p-0 data-[state=open]:bg-muted">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Open menu</span>
+          </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="DropdownMenuContent">
+          <DropdownMenuItem className="DropdownMenuItem" onClick={() => {handleEditRow(row, column, table)}}>
+              <Pen className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+              Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem className="DropdownMenuItem" onClick={deleteTest}>
+              <Trash className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+              Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>)
   )
 }
